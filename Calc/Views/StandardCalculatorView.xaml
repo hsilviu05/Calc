@@ -1,0 +1,149 @@
+﻿<UserControl x:Class="Calc.Views.StandardCalculatorView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Calc.Views"
+        mc:Ignorable="d"
+        d:DesignHeight="400" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Display Area -->
+        <Border Grid.Row="0" BorderBrush="#CCCCCC" BorderThickness="1" Margin="5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" 
+                       Text="{Binding Display}" 
+                       FontSize="24" 
+                       TextAlignment="Right" 
+                       Margin="10"
+                       TextWrapping="Wrap"/>
+            </Grid>
+        </Border>
+
+        <!-- Buttons Area -->
+        <Grid Grid.Row="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Row 1: Memory functions -->
+            <Button Grid.Row="0" Grid.Column="0" Content="MC" 
+                Command="{Binding MemoryClearCommand}" 
+                Style="{StaticResource MemoryButtonStyle}"/>
+            <Button Grid.Row="0" Grid.Column="1" Content="MR" 
+                Command="{Binding MemoryRecallCommand}" 
+                Style="{StaticResource MemoryButtonStyle}"/>
+            <Button Grid.Row="0" Grid.Column="2" Content="M+" 
+                Command="{Binding MemoryAddCommand}" 
+                Style="{StaticResource MemoryButtonStyle}"/>
+            <Button Grid.Row="0" Grid.Column="3" Content="M-" 
+                Command="{Binding MemorySubtractCommand}" 
+                Style="{StaticResource MemoryButtonStyle}"/>
+
+            <!-- Row 2: Special operations -->
+            <Button Grid.Row="1" Grid.Column="0" Content="%" 
+                Command="{Binding OperationCommand}" CommandParameter="%" 
+                Style="{StaticResource OperationButtonStyle}"/>
+            <Button Grid.Row="1" Grid.Column="1" Content="√" 
+                Command="{Binding SquareRootCommand}" 
+                Style="{StaticResource OperationButtonStyle}"/>
+            <Button Grid.Row="1" Grid.Column="2" Content="x²" 
+                Command="{Binding SquareCommand}" 
+                Style="{StaticResource OperationButtonStyle}"/>
+            <Button Grid.Row="1" Grid.Column="3" Content="1/x" 
+                Command="{Binding ReciprocalCommand}" 
+                Style="{StaticResource OperationButtonStyle}"/>
+
+            <!-- Row 3: Clear and backspace -->
+            <Button Grid.Row="2" Grid.Column="0" Content="CE" 
+                Command="{Binding ClearEntryCommand}" 
+                Style="{StaticResource OperationButtonStyle}"/>
+            <Button Grid.Row="2" Grid.Column="1" Content="C" 
+                Command="{Binding ClearCommand}" 
+                Style="{StaticResource OperationButtonStyle}"/>
+            <Button Grid.Row="2" Grid.Column="2" Content="⌫" 
+                Command="{Binding BackspaceCommand}" 
+                Style="{StaticResource OperationButtonStyle}"/>
+            <Button Grid.Row="2" Grid.Column="3" Content="÷" 
+                Command="{Binding OperationCommand}" CommandParameter="/" 
+                Style="{StaticResource OperationButtonStyle}"/>
+
+            <!-- Row 4: Numbers 7-9 and multiplication -->
+            <Button Grid.Row="3" Grid.Column="0" Content="7" 
+                Command="{Binding DigitCommand}" CommandParameter="7" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="3" Grid.Column="1" Content="8" 
+                Command="{Binding DigitCommand}" CommandParameter="8" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="3" Grid.Column="2" Content="9" 
+                Command="{Binding DigitCommand}" CommandParameter="9" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="3" Grid.Column="3" Content="×" 
+                Command="{Binding OperationCommand}" CommandParameter="*" 
+                Style="{StaticResource OperationButtonStyle}"/>
+
+            <!-- Row 5: Numbers 4-6 and subtraction -->
+            <Button Grid.Row="4" Grid.Column="0" Content="4" 
+                Command="{Binding DigitCommand}" CommandParameter="4" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="4" Grid.Column="1" Content="5" 
+                Command="{Binding DigitCommand}" CommandParameter="5" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="4" Grid.Column="2" Content="6" 
+                Command="{Binding DigitCommand}" CommandParameter="6" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="4" Grid.Column="3" Content="-" 
+                Command="{Binding OperationCommand}" CommandParameter="-" 
+                Style="{StaticResource OperationButtonStyle}"/>
+
+            <!-- Row 6: Numbers 1-3 and addition -->
+            <Button Grid.Row="5" Grid.Column="0" Content="1" 
+                Command="{Binding DigitCommand}" CommandParameter="1" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="5" Grid.Column="1" Content="2" 
+                Command="{Binding DigitCommand}" CommandParameter="2" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="5" Grid.Column="2" Content="3" 
+                Command="{Binding DigitCommand}" CommandParameter="3" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="5" Grid.Column="3" Content="+" 
+                Command="{Binding OperationCommand}" CommandParameter="+" 
+                Style="{StaticResource OperationButtonStyle}"/>
+
+            <!-- Row 7: Sign change, zero, decimal point, and equals -->
+            <Button Grid.Row="6" Grid.Column="0" Content="±" 
+                Command="{Binding NegateCommand}" 
+                Style="{StaticResource OperationButtonStyle}"/>
+            <Button Grid.Row="6" Grid.Column="1" Content="0" 
+                Command="{Binding DigitCommand}" CommandParameter="0" 
+                Style="{StaticResource DigitButtonStyle}"/>
+            <Button Grid.Row="6" Grid.Column="2" Content="." 
+                Command="{Binding DigitCommand}" CommandParameter="." 
+                Style="{StaticResource DigitButtonStyle}" Height="42" Margin="2,0,2,0" VerticalAlignment="Center"/>
+            <Button Grid.Row="6" Grid.Column="3" Content="=" 
+                Command="{Binding EqualsCommand}" 
+                Style="{StaticResource EqualsButtonStyle}"/>
+        </Grid>
+    </Grid>
+</UserControl>
