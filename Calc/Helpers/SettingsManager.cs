@@ -52,7 +52,6 @@ namespace Calc.Helpers
             }
             catch (Exception)
             {
-                // If loading fails, use default settings
                 _settings = new Settings();
             }
         }
@@ -61,7 +60,6 @@ namespace Calc.Helpers
         {
             try
             {
-                // Create directory if it doesn't exist
                 string directory = Path.GetDirectoryName(SettingsPath);
                 if (!Directory.Exists(directory))
                 {
@@ -76,7 +74,7 @@ namespace Calc.Helpers
             }
             catch (Exception)
             {
-                // Ignore errors when saving settings
+
             }
         }
     }

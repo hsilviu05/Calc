@@ -40,7 +40,7 @@ namespace Calc.Converters
                         case NumberBase.Decimal:
                             return digit <= 9;
                         case NumberBase.Hexadecimal:
-                            return true;
+                            return digit <= 15;
                     }
                 }
             }
@@ -50,7 +50,11 @@ namespace Calc.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (value is bool isChecked && isChecked && parameter is NumberBase baseValue)
+            {
+                return baseValue;
+            }
+            return null;
         }
     }
 }

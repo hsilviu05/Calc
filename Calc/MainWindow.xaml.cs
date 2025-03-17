@@ -23,38 +23,57 @@ namespace Calc
         public MainWindow()
         {
             InitializeComponent();
-
             _viewModel = new CalculatorViewModel();
             DataContext = _viewModel;
+            PreviewKeyDown += MainWindow_PreviewKeyDown;
+        }
+
+        private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // Handle special keys first
+            switch (e.Key)
+            {
+                case Key.Enter:
+                    if (_viewModel.EqualsCommand.CanExecute(null))
+                    {
+                        _viewModel.EqualsCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    break;
+                case Key.Escape:
+                    if (_viewModel.ClearCommand.CanExecute(null))
+                    {
+                        _viewModel.ClearCommand.Execute(null);
+                        e.Handled = true;
+                    }
+                    break;
+            }
+
+            // If the key wasn't handled by special cases, forward it to HandleKeyInput
+            if (!e.Handled)
+            {
+                _viewModel.HandleKeyInput(e.Key);
+                e.Handled = true;
+            }
         }
 
         private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            Close();
         }
 
         private void MenuItem_About_Click(object sender, RoutedEventArgs e)
         {
-            AboutWindow aboutWindow = new AboutWindow();
-            aboutWindow.Owner = this;
+            var aboutWindow = new Views.AboutWindow
+            {
+                Owner = this
+            };
             aboutWindow.ShowDialog();
         }
 
-        private void Window_KeyDown(object sender, KeyEventArgs e)
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            _viewModel.HandleKeyInput(e.Key);
-
-            // If ESC key is pressed, clear the result (equivalent to "C")
-            if (e.Key == Key.Escape)
-            {
-                _viewModel.ClearCommand.Execute(null);
-            }
-
-            // If Enter key is pressed, execute equals operation
-            if (e.Key == Key.Enter || e.Key == Key.Return)
-            {
-                _viewModel.EqualsCommand.Execute(null);
-            }
+            base.OnClosing(e);
         }
     }
 }

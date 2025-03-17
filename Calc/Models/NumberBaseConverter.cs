@@ -26,56 +26,81 @@ namespace Calc.Models
         public string ConvertToBase(double value, NumberBase targetBase)
         {
             long intValue = (long)value;
+            bool isNegative = intValue < 0;
+            intValue = Math.Abs(intValue);
 
+            string result;
             switch (targetBase)
             {
                 case NumberBase.Decimal:
-                    return intValue.ToString();
+                    result = intValue.ToString();
+                    break;
 
                 case NumberBase.Hexadecimal:
-                    return Convert.ToString(intValue, 16).ToUpper();
+                    result = Convert.ToString(intValue, 16).ToUpper();
+                    break;
 
                 case NumberBase.Octal:
-                    return Convert.ToString(intValue, 8);
+                    result = Convert.ToString(intValue, 8);
+                    break;
 
                 case NumberBase.Binary:
-                    return Convert.ToString(intValue, 2);
+                    result = Convert.ToString(intValue, 2);
+                    break;
 
                 default:
                     throw new ArgumentException("Invalid number base");
             }
+
+            return isNegative ? "-" + result : result;
         }
 
         public double ConvertFromBase(string value, NumberBase sourceBase)
         {
             try
             {
+                if (string.IsNullOrEmpty(value))
+                    return 0;
+
+                bool isNegative = value.StartsWith("-");
+                string absValue = isNegative ? value.Substring(1) : value;
+
+                long result;
                 switch (sourceBase)
                 {
                     case NumberBase.Decimal:
-                        return double.Parse(value);
+                        result = long.Parse(absValue);
+                        break;
 
                     case NumberBase.Hexadecimal:
-                        return Convert.ToInt64(value, 16);
+                        result = Convert.ToInt64(absValue, 16);
+                        break;
 
                     case NumberBase.Octal:
-                        return Convert.ToInt64(value, 8);
+                        result = Convert.ToInt64(absValue, 8);
+                        break;
 
                     case NumberBase.Binary:
-                        return Convert.ToInt64(value, 2);
+                        result = Convert.ToInt64(absValue, 2);
+                        break;
 
                     default:
                         throw new ArgumentException("Invalid number base");
                 }
+
+                return isNegative ? -result : result;
             }
             catch (Exception ex) when (ex is FormatException || ex is OverflowException)
             {
-                throw new FormatException("Invalid number format for the selected base");
+                throw new FormatException($"Invalid number format for {sourceBase} base");
             }
         }
 
         public bool IsValidDigitForBase(char digit, NumberBase baseType)
         {
+            if (digit == '-')
+                return true;
+
             switch (baseType)
             {
                 case NumberBase.Decimal:

@@ -1,68 +1,80 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Calc.Models
 {
+    public class MemoryValue
+    {
+        public double Value { get; set; }
+    }
+
     public class MemoryManager
     {
-        private double _memoryValue;
-        private List<double> _memoryStack;
+        private ObservableCollection<MemoryValue> _memoryValues;
+        private double _currentMemoryValue;
+
+        public ObservableCollection<MemoryValue> MemoryValues => _memoryValues;
 
         public MemoryManager()
         {
-            _memoryValue = 0;
-            _memoryStack = new List<double>();
+            _memoryValues = new ObservableCollection<MemoryValue>();
+            _currentMemoryValue = 0;
         }
 
-        public void MemoryClear()
+        public void Clear()
         {
-            _memoryValue = 0;
-            _memoryStack.Clear();
+            _currentMemoryValue = 0;
+            _memoryValues.Clear();
         }
 
-        public double MemoryRecall()
+        public double Recall()
         {
-            return _memoryValue;
+            return _currentMemoryValue;
         }
 
-        public void MemoryStore(double value)
+        public void Store(double value)
         {
-            _memoryValue = value;
-            if (!_memoryStack.Contains(value))
+            _currentMemoryValue = value;
+            _memoryValues.Insert(0, new MemoryValue { Value = value });
+        }
+
+        public void Add(double value)
+        {
+            _currentMemoryValue += value;
+            if (_memoryValues.Any())
             {
-                _memoryStack.Add(value);
+                _memoryValues[0].Value = _currentMemoryValue;
+            }
+            else
+            {
+                Store(_currentMemoryValue);
             }
         }
 
-        public void MemoryAdd(double value)
+        public void Subtract(double value)
         {
-            _memoryValue += value;
-            if (!_memoryStack.Contains(_memoryValue))
+            _currentMemoryValue -= value;
+            if (_memoryValues.Any())
             {
-                _memoryStack.Add(_memoryValue);
+                _memoryValues[0].Value = _currentMemoryValue;
             }
-        }
-
-        public void MemorySubtract(double value)
-        {
-            _memoryValue -= value;
-            if (!_memoryStack.Contains(_memoryValue))
+            else
             {
-                _memoryStack.Add(_memoryValue);
+                Store(_currentMemoryValue);
             }
         }
 
         public bool HasMemory()
         {
-            return _memoryValue != 0 || _memoryStack.Count > 0;
+            return _memoryValues.Any();
         }
 
         public List<double> GetMemoryStack()
         {
-            return new List<double>(_memoryStack);
+            return _memoryValues.Select(mv => mv.Value).ToList();
         }
     }
 }

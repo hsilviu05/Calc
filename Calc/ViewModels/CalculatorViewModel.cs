@@ -11,6 +11,8 @@ using System.Windows.Data;
 using Calc.Helpers;
 using Calc.Models;
 using System.Windows.Input;
+using System.Collections.ObjectModel;
+using Calc.Views;
 
 namespace Calc.ViewModels
 {
@@ -19,14 +21,14 @@ namespace Calc.ViewModels
         private CalculatorEngine _calculatorEngine;
         private MemoryManager _memoryManager;
         private NumberBaseConverter _baseConverter;
-        //private Clipboard _clipboard;
         private string _display;
         private bool _useDigitGrouping;
         private bool _isStandardMode;
         private bool _isProgrammerMode;
         private NumberBase _selectedBase;
+        private bool _useOperationPrecedence;
+        private MemoryValue _selectedMemoryValue;
 
-        // Properties
         public string Display
         {
             get => _display;
@@ -80,7 +82,29 @@ namespace Calc.ViewModels
             }
         }
 
-        // Commands
+        public bool UseOperationPrecedence
+        {
+            get => _useOperationPrecedence;
+            set
+            {
+                _useOperationPrecedence = value;
+                _calculatorEngine.UseOperationPrecedence = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<MemoryValue> MemoryValues => _memoryManager.MemoryValues;
+
+        public MemoryValue SelectedMemoryValue
+        {
+            get => _selectedMemoryValue;
+            set
+            {
+                _selectedMemoryValue = value;
+                OnPropertyChanged();
+            }
+        }
+
         public ICommand DigitCommand { get; private set; }
         public ICommand OperationCommand { get; private set; }
         public ICommand EqualsCommand { get; private set; }
@@ -96,12 +120,15 @@ namespace Calc.ViewModels
         public ICommand SquareCommand { get; private set; }
         public ICommand ReciprocalCommand { get; private set; }
         public ICommand NegateCommand { get; private set; }
+        public ICommand PercentageCommand { get; private set; }
         public ICommand SwitchToStandardModeCommand { get; private set; }
         public ICommand SwitchToProgrammerModeCommand { get; private set; }
         public ICommand ChangeBaseCommand { get; private set; }
         public ICommand CutCommand { get; private set; }
         public ICommand CopyCommand { get; private set; }
         public ICommand PasteCommand { get; private set; }
+        public ICommand ShowMemoryListCommand { get; private set; }
+        public ICommand UseMemoryValueCommand { get; private set; }
 
         public CalculatorViewModel()
         {
@@ -109,13 +136,10 @@ namespace Calc.ViewModels
             _memoryManager = new MemoryManager();
             _baseConverter = new NumberBaseConverter();
 
-            // Load settings
             LoadSettings();
 
-            // Initialize display
             UpdateDisplay();
 
-            // Initialize commands
             InitializeCommands();
         }
 
@@ -136,12 +160,15 @@ namespace Calc.ViewModels
             SquareCommand = new RelayCommand(ExecuteSquareCommand);
             ReciprocalCommand = new RelayCommand(ExecuteReciprocalCommand);
             NegateCommand = new RelayCommand(ExecuteNegateCommand);
+            PercentageCommand = new RelayCommand(ExecutePercentageCommand);
             SwitchToStandardModeCommand = new RelayCommand(ExecuteSwitchToStandardModeCommand);
             SwitchToProgrammerModeCommand = new RelayCommand(ExecuteSwitchToProgrammerModeCommand);
             ChangeBaseCommand = new RelayCommand<NumberBase>(ExecuteChangeBaseCommand);
             CutCommand = new RelayCommand(ExecuteCutCommand);
             CopyCommand = new RelayCommand(ExecuteCopyCommand);
             PasteCommand = new RelayCommand(ExecutePasteCommand);
+            ShowMemoryListCommand = new RelayCommand(ExecuteShowMemoryListCommand);
+            UseMemoryValueCommand = new RelayCommand(ExecuteUseMemoryValueCommand);
         }
 
         private void LoadSettings()
@@ -152,6 +179,7 @@ namespace Calc.ViewModels
             IsStandardMode = settings.IsStandardMode;
             IsProgrammerMode = !settings.IsStandardMode;
             SelectedBase = settings.LastNumberBase;
+            UseOperationPrecedence = settings.UseOperationPrecedence;
             _baseConverter.CurrentBase = settings.LastNumberBase;
         }
 
@@ -161,7 +189,8 @@ namespace Calc.ViewModels
             {
                 UseDigitGrouping = UseDigitGrouping,
                 IsStandardMode = IsStandardMode,
-                LastNumberBase = SelectedBase
+                LastNumberBase = SelectedBase,
+                UseOperationPrecedence = UseOperationPrecedence
             };
 
             SettingsManager.SetSettings(settings);
@@ -196,14 +225,10 @@ namespace Calc.ViewModels
             {
                 if (IsProgrammerMode && _selectedBase != NumberBase.Decimal)
                 {
-                    // Check if the digit is valid for the current base
                     if (_baseConverter.IsValidDigitForBase(digit[0], _selectedBase))
                     {
-                        // For non-decimal bases, we need to build the number directly
                         string currentDisplay = Display == "0" ? string.Empty : Display;
                         Display = currentDisplay + digit;
-
-                        // Convert the displayed value back to decimal for internal storage
                         double decimalValue = _baseConverter.ConvertFromBase(Display, _selectedBase);
                         _calculatorEngine.SetCurrentValue(decimalValue);
                     }
@@ -216,8 +241,7 @@ namespace Calc.ViewModels
             }
             catch (Exception ex)
             {
-                Display = "Error";
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleError(ex);
             }
         }
 
@@ -230,8 +254,7 @@ namespace Calc.ViewModels
             }
             catch (Exception ex)
             {
-                Display = "Error";
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleError(ex);
             }
         }
 
@@ -244,8 +267,7 @@ namespace Calc.ViewModels
             }
             catch (Exception ex)
             {
-                Display = "Error";
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleError(ex);
             }
         }
 
@@ -298,29 +320,35 @@ namespace Calc.ViewModels
 
         private void ExecuteMemoryClearCommand()
         {
-            _memoryManager.MemoryClear();
+            _memoryManager.Clear();
+            OnPropertyChanged(nameof(MemoryValues));
         }
 
         private void ExecuteMemoryRecallCommand()
         {
-            double memoryValue = _memoryManager.MemoryRecall();
-            _calculatorEngine.SetCurrentValue(memoryValue);
-            UpdateDisplay();
+            if (_memoryManager.HasMemory())
+            {
+                _calculatorEngine.SetCurrentValue(_memoryManager.Recall());
+                UpdateDisplay();
+            }
         }
 
         private void ExecuteMemoryStoreCommand()
         {
-            _memoryManager.MemoryStore(_calculatorEngine.GetCurrentValue());
+            _memoryManager.Store(_calculatorEngine.GetCurrentValue());
+            OnPropertyChanged(nameof(MemoryValues));
         }
 
         private void ExecuteMemoryAddCommand()
         {
-            _memoryManager.MemoryAdd(_calculatorEngine.GetCurrentValue());
+            _memoryManager.Add(_calculatorEngine.GetCurrentValue());
+            OnPropertyChanged(nameof(MemoryValues));
         }
 
         private void ExecuteMemorySubtractCommand()
         {
-            _memoryManager.MemorySubtract(_calculatorEngine.GetCurrentValue());
+            _memoryManager.Subtract(_calculatorEngine.GetCurrentValue());
+            OnPropertyChanged(nameof(MemoryValues));
         }
 
         private void ExecuteSquareRootCommand()
@@ -332,8 +360,7 @@ namespace Calc.ViewModels
             }
             catch (Exception ex)
             {
-                Display = "Error";
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleError(ex);
             }
         }
 
@@ -360,8 +387,7 @@ namespace Calc.ViewModels
             }
             catch (Exception ex)
             {
-                Display = "Error";
-                MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                HandleError(ex);
             }
         }
 
@@ -376,6 +402,19 @@ namespace Calc.ViewModels
             {
                 Display = "Error";
                 MessageBox.Show(ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ExecutePercentageCommand()
+        {
+            try
+            {
+                _calculatorEngine.Percentage();
+                UpdateDisplay();
+            }
+            catch (Exception ex)
+            {
+                HandleError(ex);
             }
         }
 
@@ -434,7 +473,6 @@ namespace Calc.ViewModels
                 if (string.IsNullOrEmpty(clipboardText))
                     return;
 
-                // For non-decimal bases in programmer mode, validate clipboard text
                 if (IsProgrammerMode && _selectedBase != NumberBase.Decimal)
                 {
                     bool isValid = true;
@@ -460,7 +498,6 @@ namespace Calc.ViewModels
                 }
                 else
                 {
-                    // For decimal mode, try to parse as double
                     if (double.TryParse(clipboardText, out double value))
                     {
                         _calculatorEngine.SetCurrentValue(value);
@@ -478,48 +515,93 @@ namespace Calc.ViewModels
             }
         }
 
+        private void ExecuteShowMemoryListCommand()
+        {
+            var memoryListView = new MemoryListView
+            {
+                DataContext = this,
+                Owner = Application.Current.MainWindow
+            };
+            memoryListView.ShowDialog();
+        }
+
+        private void ExecuteUseMemoryValueCommand()
+        {
+            if (SelectedMemoryValue != null)
+            {
+                _calculatorEngine.SetCurrentValue(SelectedMemoryValue.Value);
+                UpdateDisplay();
+            }
+        }
+
         #endregion
 
         public void HandleKeyInput(Key key)
         {
-            // Handle numeric keys
-            if (key >= Key.D0 && key <= Key.D9)
+            try
             {
-                ExecuteDigitCommand((key - Key.D0).ToString());
-            }
-            else if (key >= Key.NumPad0 && key <= Key.NumPad9)
-            {
-                ExecuteDigitCommand((key - Key.NumPad0).ToString());
-            }
-            // Handle operator keys
-            else if (key == Key.Add || key == Key.OemPlus)
-            {
-                ExecuteOperationCommand("+");
-            }
-            else if (key == Key.Subtract || key == Key.OemMinus)
-            {
-                ExecuteOperationCommand("-");
-            }
-            else if (key == Key.Multiply)
-            {
-                ExecuteOperationCommand("*");
-            }
-            else if (key == Key.Divide || key == Key.OemQuestion)
-            {
-                ExecuteOperationCommand("/");
-            }
-            else if (key == Key.Back)
-            {
-                ExecuteBackspaceCommand();
-            }
-            // Handle hex digits for programmer mode
-            else if (IsProgrammerMode && _selectedBase == NumberBase.Hexadecimal)
-            {
-                if (key >= Key.A && key <= Key.F)
+                if ((key >= Key.D0 && key <= Key.D9) || (key >= Key.NumPad0 && key <= Key.NumPad9))
                 {
-                    ExecuteDigitCommand(((char)(key - Key.A + 'A')).ToString());
+                    string digit = key.ToString().Last().ToString();
+                    ExecuteDigitCommand(digit);
+                }
+                else if (key == Key.Decimal || key == Key.OemPeriod)
+                {
+                    ExecuteDigitCommand(".");
+                }
+                else if (key == Key.Add || (key == Key.OemPlus && Keyboard.Modifiers == ModifierKeys.Shift))
+                {
+                    ExecuteOperationCommand("+");
+                }
+                else if (key == Key.Subtract || key == Key.OemMinus)
+                {
+                    ExecuteOperationCommand("-");
+                }
+                else if (key == Key.Multiply)
+                {
+                    ExecuteOperationCommand("*");
+                }
+                else if (key == Key.Divide || key == Key.OemQuestion)
+                {
+                    ExecuteOperationCommand("/");
+                }
+                else if (key == Key.Back)
+                {
+                    ExecuteBackspaceCommand();
+                }
+                else if (key == Key.Delete)
+                {
+                    ExecuteClearCommand();
                 }
             }
+            catch (Exception ex)
+            {
+                HandleError(ex);
+            }
+        }
+
+        private void HandleError(Exception ex)
+        {
+            string message;
+            if (ex is DivideByZeroException)
+            {
+                message = "Cannot divide by zero";
+            }
+            else if (ex is FormatException)
+            {
+                message = "Invalid number format";
+            }
+            else if (ex is ArgumentException)
+            {
+                message = ex.Message;
+            }
+            else
+            {
+                message = "An error occurred";
+            }
+
+            Display = "Error";
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         #region INotifyPropertyChanged Implementation

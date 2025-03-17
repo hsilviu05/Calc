@@ -6,61 +6,91 @@
         xmlns:local="clr-namespace:Calc"
         xmlns:views="clr-namespace:Calc.Views"
         mc:Ignorable="d"
-        Title="Calculator" Height="450" Width="300"
-        WindowStartupLocation="CenterScreen">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <!-- Menu -->
-        <Menu Grid.Row="0">
-            <MenuItem Header="File">
-                <MenuItem Header="Cut" Command="{Binding CutCommand}" InputGestureText="Ctrl+X"/>
-                <MenuItem Header="Copy" Command="{Binding CopyCommand}" InputGestureText="Ctrl+C"/>
-                <MenuItem Header="Paste" Command="{Binding PasteCommand}" InputGestureText="Ctrl+V"/>
-                <Separator/>
-                <MenuItem Header="Digit Grouping" IsCheckable="True" IsChecked="{Binding UseDigitGrouping}" />
-                <Separator/>
-                <MenuItem Header="Exit" Click="MenuItem_Exit_Click" InputGestureText="Alt+F4"/>
-            </MenuItem>
-            <MenuItem Header="View">
-                <MenuItem Header="Standard" IsCheckable="True" IsChecked="{Binding IsStandardMode}" Command="{Binding SwitchToStandardModeCommand}"/>
-                <MenuItem Header="Programmer" IsCheckable="True" IsChecked="{Binding IsProgrammerMode}" Command="{Binding SwitchToProgrammerModeCommand}"/>
-            </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem Header="About" Click="MenuItem_About_Click"/>
-            </MenuItem>
-        </Menu>
-        <!-- Calculator Content -->
-        <Grid Grid.Row="1">
-            <!-- Standard Calculator View -->
-            <views:StandardCalculatorView>
-                <views:StandardCalculatorView.Style>
-                    <Style TargetType="views:StandardCalculatorView">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsStandardMode}" Value="True">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </views:StandardCalculatorView.Style>
-            </views:StandardCalculatorView>
+        Title="Calculator"
+        Height="500"
+        Width="320"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#F0F0F0">
+        <Grid>
+                <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!-- Menu -->
+                <Menu Grid.Row="0">
+                        <MenuItem Header="File">
+                                <MenuItem Header="Cut"
+                                          Command="{Binding CutCommand}"
+                                          InputGestureText="Ctrl+X"/>
+                                <MenuItem Header="Copy"
+                                          Command="{Binding CopyCommand}"
+                                          InputGestureText="Ctrl+C"/>
+                                <MenuItem Header="Paste"
+                                          Command="{Binding PasteCommand}"
+                                          InputGestureText="Ctrl+V"/>
+                                <Separator/>
+                                <MenuItem Header="Digit Grouping"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding UseDigitGrouping}"/>
+                                <MenuItem Header="Operation Precedence"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding UseOperationPrecedence}"/>
+                                <Separator/>
+                                <MenuItem Header="Exit"
+                                          Click="MenuItem_Exit_Click"
+                                          InputGestureText="Alt+F4"/>
+                        </MenuItem>
+                        <MenuItem Header="View">
+                                <MenuItem Header="Standard"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding IsStandardMode}"
+                                          Command="{Binding SwitchToStandardModeCommand}"/>
+                                <MenuItem Header="Programmer"
+                                          IsCheckable="True"
+                                          IsChecked="{Binding IsProgrammerMode}"
+                                          Command="{Binding SwitchToProgrammerModeCommand}"/>
+                        </MenuItem>
+                        <MenuItem Header="Help">
+                                <MenuItem Header="About"
+                                          Click="MenuItem_About_Click"/>
+                        </MenuItem>
+                </Menu>
+                <!-- Calculator Content -->
+                <Grid Grid.Row="1">
+                        <!-- Standard Calculator View -->
+                        <views:StandardCalculatorView>
+                                <views:StandardCalculatorView.Style>
+                                        <Style TargetType="views:StandardCalculatorView">
+                                                <Setter Property="Visibility"
+                                                        Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsStandardMode}"
+                                                                     Value="True">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Visible"/>
+                                                        </DataTrigger>
+                                                </Style.Triggers>
+                                        </Style>
+                                </views:StandardCalculatorView.Style>
+                        </views:StandardCalculatorView>
 
-            <!-- Programmer Calculator View -->
-            <views:ProgrammerCalculatorView>
-                <views:ProgrammerCalculatorView.Style>
-                    <Style TargetType="views:ProgrammerCalculatorView">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsProgrammerMode}" Value="True">
-                                <Setter Property="Visibility" Value="Visible" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </views:ProgrammerCalculatorView.Style>
-            </views:ProgrammerCalculatorView>
+                        <!-- Programmer Calculator View -->
+                        <views:ProgrammerCalculatorView>
+                                <views:ProgrammerCalculatorView.Style>
+                                        <Style TargetType="views:ProgrammerCalculatorView">
+                                                <Setter Property="Visibility"
+                                                        Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsProgrammerMode}"
+                                                                     Value="True">
+                                                                <Setter Property="Visibility"
+                                                                        Value="Visible"/>
+                                                        </DataTrigger>
+                                                </Style.Triggers>
+                                        </Style>
+                                </views:ProgrammerCalculatorView.Style>
+                        </views:ProgrammerCalculatorView>
+                </Grid>
         </Grid>
-    </Grid>
 </Window>
