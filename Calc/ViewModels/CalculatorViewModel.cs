@@ -227,10 +227,20 @@ namespace Calc.ViewModels
                 {
                     if (_baseConverter.IsValidDigitForBase(digit[0], _selectedBase))
                     {
-                        string currentDisplay = Display == "0" ? string.Empty : Display;
-                        Display = currentDisplay + digit;
-                        double decimalValue = _baseConverter.ConvertFromBase(Display, _selectedBase);
-                        _calculatorEngine.SetCurrentValue(decimalValue);
+                        if (_calculatorEngine.IsNewNumber)
+                        {
+                            double newDigitValue = _baseConverter.ConvertFromBase(digit, _selectedBase);
+                            _calculatorEngine.SetCurrentValue(newDigitValue);
+                            Display = digit;
+                        }
+                        else
+                        {
+                            double currentValue = _calculatorEngine.GetCurrentValue();
+                            double newDigitValue = _baseConverter.ConvertFromBase(digit, _selectedBase);
+                            double newValue = currentValue * (int)_selectedBase + newDigitValue;
+                            _calculatorEngine.SetCurrentValue(newValue);
+                            Display = _baseConverter.ConvertToBase(newValue, _selectedBase);
+                        }
                     }
                 }
                 else
@@ -308,7 +318,6 @@ namespace Calc.ViewModels
                 }
                 catch
                 {
-                    // If parsing fails, just clear the entry
                     ExecuteClearEntryCommand();
                 }
             }

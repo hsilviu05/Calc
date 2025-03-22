@@ -30,7 +30,6 @@ namespace Calc
 
         private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // Handle special keys first
             switch (e.Key)
             {
                 case Key.Enter:
@@ -49,7 +48,6 @@ namespace Calc
                     break;
             }
 
-            // If the key wasn't handled by special cases, forward it to HandleKeyInput
             if (!e.Handled)
             {
                 _viewModel.HandleKeyInput(e.Key);

@@ -157,19 +157,22 @@
                                 Content="7"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="7"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=7}"/>
                         <Button Grid.Row="2"
                                 Grid.Column="1"
                                 Content="8"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="8"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=8}"/>
                         <Button Grid.Row="2"
                                 Grid.Column="2"
                                 Content="9"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="9"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=9}"/>
                         <Button Grid.Row="2"
                                 Grid.Column="3"
                                 Content="⌫"
@@ -182,19 +185,22 @@
                                 Content="4"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="4"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=4}"/>
                         <Button Grid.Row="3"
                                 Grid.Column="1"
                                 Content="5"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="5"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=5}"/>
                         <Button Grid.Row="3"
                                 Grid.Column="2"
                                 Content="6"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="6"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=6}"/>
                         <Button Grid.Row="3"
                                 Grid.Column="3"
                                 Content="÷"
@@ -208,19 +214,22 @@
                                 Content="1"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="1"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=1}"/>
                         <Button Grid.Row="4"
                                 Grid.Column="1"
                                 Content="2"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="2"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=2}"/>
                         <Button Grid.Row="4"
                                 Grid.Column="2"
                                 Content="3"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="3"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=3}"/>
                         <Button Grid.Row="4"
                                 Grid.Column="3"
                                 Content="×"
@@ -234,7 +243,8 @@
                                 Content="0"
                                 Command="{Binding DigitCommand}"
                                 CommandParameter="0"
-                                Style="{StaticResource DigitButtonStyle}"/>
+                                Style="{StaticResource DigitButtonStyle}"
+                                IsEnabled="{Binding SelectedBase, Converter={StaticResource BaseEnableConverter}, ConverterParameter=0}"/>
                         <Button Grid.Row="5"
                                 Grid.Column="1"
                                 Content="-"

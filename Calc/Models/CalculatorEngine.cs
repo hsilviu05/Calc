@@ -24,6 +24,11 @@ namespace Calc.Models
             set => _useOperationPrecedence = value;
         }
 
+        public bool IsNewNumber
+        {
+            get => _newNumber;
+        }
+
         public CalculatorEngine()
         {
             Clear();
